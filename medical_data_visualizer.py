@@ -4,11 +4,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Import data
-df = None
+df = pd.read_csv(r"medical_examination.csv")
 
 # Add 'overweight' column
-df['overweight'] = None
+ow_list = []
 
+for patient in df.index:
+    Body_Mass_Index = df['weight'][patient] / ((df['height'][patient]/100)*(df['height'][patient]/100))
+    if Body_Mass_Index > 25:
+        ow_list.append(1)
+    else:
+        ow_list.append(0)
+
+df['overweight'] = ow_list
 # Normalize data by making 0 always good and 1 always bad. If the value of 'cholesterol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
 
 
