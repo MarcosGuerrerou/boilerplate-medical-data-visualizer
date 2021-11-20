@@ -19,6 +19,25 @@ for patient in df.index:
 df['overweight'] = ow_list
 # Normalize data by making 0 always good and 1 always bad. If the value of 'cholesterol' or 'gluc' is 1, make the value 0. If the value is more than 1, make the value 1.
 
+cholesterol_list = []
+gluc_list = []
+
+for patient in df.index:
+    if df['cholesterol'][patient] == 1:
+        cholesterol_list.append(0)
+    else:
+        cholesterol_list.append(1)
+    
+    if df['gluc'][patient] == 1:
+        gluc_list.append(0)
+    else:
+        gluc_list.append(1)
+
+df['cholesterol'] = cholesterol_list
+df['gluc'] = gluc_list
+
+print(df)
+
 
 # Draw Categorical Plot
 def draw_cat_plot():
