@@ -36,20 +36,20 @@ for patient in df.index:
 df['cholesterol'] = cholesterol_list
 df['gluc'] = gluc_list
 
-print(df)
-
-
 # Draw Categorical Plot
 def draw_cat_plot():
     # Create DataFrame for cat plot using `pd.melt` using just the values from 'cholesterol', 'gluc', 'smoke', 'alco', 'active', and 'overweight'.
-    df_cat = None
-
+    df_reduced = df[['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight', 'cardio']]
 
     # Group and reformat the data to split it by 'cardio'. Show the counts of each feature. You will have to rename one of the columns for the catplot to work correctly.
-    df_cat = None
+    
+    df_cat = pd.melt(df_reduced, id_vars = 'cardio', value_vars = ['active', 'alco', 'cholesterol', 'gluc', 'overweight', 'smoke'], value_name = 'values')
 
     # Draw the catplot with 'sns.catplot()'
 
+    graph = sns.catplot(x = 'variable', col = 'cardio', hue = 'values', data = df_cat, kind = 'count')
+    graph.set_axis_labels('variable', 'total')
+    fig = graph.fig
 
 
     # Do not modify the next two lines
@@ -60,23 +60,30 @@ def draw_cat_plot():
 # Draw Heat Map
 def draw_heat_map():
     # Clean the data
-    df_heat = None
+    df_heat = df[(df['ap_lo'] <= df['ap_hi']) 
+                & (df['height'] >= df['height'].quantile(0.025)) 
+                & (df['height'] <= df['height'].quantile(0.975))
+                & (df['weight'] >= df['weight'].quantile(0.025)) 
+                & (df['weight'] <= df['weight'].quantile(0.975))]
 
     # Calculate the correlation matrix
-    corr = None
+    corr = df_heat.corr()
 
     # Generate a mask for the upper triangle
-    mask = None
-
+    mask = np.triu(np.ones_like(corr, dtype = bool))
 
 
     # Set up the matplotlib figure
-    fig, ax = None
+    fig, ax = plt.subplots(figsize = (16, 12))
 
     # Draw the heatmap with 'sns.heatmap()'
-
-
+    ax = sns.heatmap(corr, mask = mask, annot = True, fmt='.1f', center = 0, linewidths = 1, vmax = 0.25, vmin =-0.1, square = True, cbar_kws = {'format': '%.2f', 'shrink': 0.45})
+    ax.set_yticklabels(ax.get_yticklabels(), rotation = 0, fontsize = 15)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation = 90, fontsize = 15)
 
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
     return fig
+
+if __name__ == '__main__':
+    draw_heat_map()
